@@ -49,7 +49,7 @@ function createCompletionItem(file) {
     const snippetCompletion = new vscode.CompletionItem(fileName, 3);
 
     snippetCompletion.detail = retrieveWithDirectoryInformationFromFile(file)
-    snippetCompletion.command = { title: 'Import file', command: 'vueIntellisense.importFile', arguments: [ file, fileName ] }
+    snippetCompletion.command = { title: 'Import file', command: 'vueDiscovery.importFile', arguments: [ file, fileName ] }
 
     // We don't want to insert anything here since this will be done in the importFile command
     snippetCompletion.insertText = '';
@@ -67,7 +67,7 @@ function hasScriptTagInactiveTextEditor () {
 function config(key) {
     return vscode.workspace
         .getConfiguration()
-        .get(`vueIntellisense.${key}`)
+        .get(`vueDiscovery.${key}`)
 }
 
 /**
@@ -263,7 +263,7 @@ function activate(context) {
 		}
     });
 
-	let importFile = vscode.commands.registerCommand('vueIntellisense.importFile', async (file, fileName) => {
+	let importFile = vscode.commands.registerCommand('vueDiscovery.importFile', async (file, fileName) => {
         if(!hasScriptTagInactiveTextEditor()) {
             return vscode.window.showWarningMessage('Looks like there is no script tag in this file!');
         }

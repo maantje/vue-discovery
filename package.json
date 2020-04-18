@@ -1,7 +1,8 @@
 {
- "name": "vue-intellisense",
- "displayName": "Vue intellisense",
- "description": "Missing intellisense for Vue.",
+ "name": "vue-discovery",
+ "displayName": "Vue discovery",
+ "description": "Missing component discovery for Vue.",
+ "publisher": "maantje",
  "version": "0.0.1",
  "engines": {
   "vscode": "^1.44.0"
@@ -16,9 +17,9 @@
  "contributes": {
   "configuration": {
    "type": "object",
-   "title": "Vue.js Intellisense",
+   "title": "Vue.js discovery",
    "properties": {
-    "vueIntellisense.rootDirectory": {
+    "vueDiscovery.rootDirectory": {
      "type": "string",
      "default": "",
      "description": "root directory in workspace for file grep. ex) src"
@@ -27,7 +28,7 @@
   },
   "commands": [
    {
-    "command": "vue-intellisense.helloWorld",
+    "command": "vue-discovery.helloWorld",
     "title": "Hello World"
    }
   ]

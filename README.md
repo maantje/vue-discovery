@@ -1,6 +1,6 @@
-# vue-intellisense README
+# vue-discovery README
 
-This is the README for your extension "vue-intellisense". After writing up a brief description, we recommend including the following sections.
+This extension aims to make Vue development easier by providing discovery for vue components
 
 ## Features
 

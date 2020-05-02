@@ -153,7 +153,7 @@ function parsePropsFromSFC(file) {
 
 
     const propsStartIndex = /props: {/.exec(content);
-
+    console.log('propstartindex', propsStartIndex);
     if (!propsStartIndex || propsStartIndex.index === -1) {
         return mixinProps;
     }

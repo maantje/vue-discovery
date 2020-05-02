@@ -176,7 +176,7 @@ function parsePropsFromSFC(file) {
     }
 
     // parseMixinsFromContent(content)
-
+    console.log({ ...mixinProps,...eval(`({${toSearch.substring(0, index)}})`).props });
     return { ...mixinProps,...eval(`({${toSearch.substring(0, index)}})`).props };
 }
 

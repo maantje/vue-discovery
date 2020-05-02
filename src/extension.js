@@ -1,9 +1,10 @@
 const vscode = require('vscode');
-const glob = require('glob')
+const glob = require('glob');
 var fs = require('fs');
 
-let jsFiles = []
+let jsFiles = [];
 
+const { CompletionItemKind, CompletionItem, SnippetString } = vscode;
 /**
  * Finds all .vue files in the src directory
  */
@@ -11,12 +12,12 @@ function getVueFiles() {
     return new Promise((resolve, reject) => {
         glob(getRootPath() + '/src/**/*.vue', (err, res) => {
             if (err) {
-              return reject(err);
+                return reject(err);
             }
 
             resolve(res);
         });
-    })
+    });
 }
 
 /**
@@ -26,12 +27,12 @@ function getJsFiles() {
     return new Promise((resolve, reject) => {
         glob(getRootPath() + '/src/**/*.js', (err, res) => {
             if (err) {
-              return reject(err);
+                return reject(err);
             }
 
             resolve(res);
         });
-    })
+    });
 }
 
 
@@ -42,9 +43,9 @@ function getJsFiles() {
  * @param {String} file
  */
 function retrieveComponentNameFromFile(file) {
-    const parts = file.split('/')
+    const parts = file.split('/');
 
-    return parts[parts.length - 1].split('.')[0]
+    return parts[parts.length - 1].split('.')[0];
 }
 
 /**
@@ -53,9 +54,9 @@ function retrieveComponentNameFromFile(file) {
  * @param {String} file
  */
 function retrieveWithDirectoryInformationFromFile(file) {
-    const parts = file.split('/')
+    const parts = file.split('/');
 
-    return parts.slice(parts.length - 2, parts.length).join('/')
+    return parts.slice(parts.length - 2, parts.length).join('/');
 }
 
 /**
@@ -63,38 +64,38 @@ function retrieveWithDirectoryInformationFromFile(file) {
  * @param {String} file
  */
 function createComponentCompletionItem(file) {
-    const fileName = retrieveComponentNameFromFile(file)
-    const snippetCompletion = new vscode.CompletionItem(fileName, 3);
+    const fileName = retrieveComponentNameFromFile(file);
+    const snippetCompletion = new CompletionItem(fileName, CompletionItemKind.Constructor);
 
-    snippetCompletion.detail = retrieveWithDirectoryInformationFromFile(file)
-    snippetCompletion.command = { title: 'Import file', command: 'vueDiscovery.importFile', arguments: [ file, fileName ] }
+    snippetCompletion.detail = retrieveWithDirectoryInformationFromFile(file);
+    snippetCompletion.command = { title: 'Import file', command: 'vueDiscovery.importFile', arguments: [file, fileName] };
 
     // We don't want to insert anything here since this will be done in the importFile command
     snippetCompletion.insertText = '';
 
-    return snippetCompletion
+    return snippetCompletion;
 }
 
 function createPropCompletionItem(prop) {
-    const snippetCompletion = new vscode.CompletionItem(prop, 5);
+    const snippetCompletion = new CompletionItem(prop, CompletionItemKind.Variable);
 
-    snippetCompletion.insertText = new vscode.SnippetString(`${prop}="$0"`);
+    snippetCompletion.insertText = new SnippetString(`${prop}="$0"`);
 
-    return snippetCompletion
+    return snippetCompletion;
 }
 
 
-function hasScriptTagInactiveTextEditor () {
-    const text = vscode.window.activeTextEditor.document.getText()
+function hasScriptTagInactiveTextEditor() {
+    const text = vscode.window.activeTextEditor.document.getText();
 
-    const scriptTagMatch = /<script/.exec(text)
-    return scriptTagMatch && scriptTagMatch.index > -1
+    const scriptTagMatch = /<script/.exec(text);
+    return scriptTagMatch && scriptTagMatch.index > -1;
 }
 
 function config(key) {
     return vscode.workspace
         .getConfiguration()
-        .get(`vueDiscovery.${key}`)
+        .get(`vueDiscovery.${key}`);
 }
 
 /**
@@ -102,23 +103,23 @@ function config(key) {
  * @param {String} content
  */
 function parseMixinsFromContent(content) {
-    const mixinsStart = /mixins: \[/.exec(content)
+    const mixinsStart = /mixins: \[/.exec(content);
 
-        if(!mixinsStart || mixinsStart.index === -1) {
-        return false
+    if (!mixinsStart || mixinsStart.index === -1) {
+        return false;
     }
 
-    const toSearch = content.substring(mixinsStart.index, content.length)
+    const toSearch = content.substring(mixinsStart.index, content.length);
 
-    let foundEnd = false
+    let foundEnd = false;
 
-    let index = 0
+    let index = 0;
 
     while (!foundEnd) {
-        ++index
+        ++index;
 
         if (toSearch[index] === ']') {
-            foundEnd = true
+            foundEnd = true;
         }
     }
 
@@ -131,50 +132,50 @@ function parseMixinsFromContent(content) {
  * @param {String} file
  */
 function parsePropsFromSFC(file) {
-    const content = fs.readFileSync(file,'utf8')
+    const content = fs.readFileSync(file,'utf8');
 
-    const mixins = parseMixinsFromContent(content)
-    let mixinProps = {}
+    const mixins = parseMixinsFromContent(content);
+    let mixinProps = {};
 
     if (mixins) {
         mixinProps = mixins.reduce((accumulator, mixin) => {
-            const file = jsFiles.find(file => file.includes(mixin))
+            const file = jsFiles.find(file => file.includes(mixin));
 
             if (!file) {
-                return accumulator
+                return accumulator;
             }
 
-            return {...accumulator, ...parsePropsFromSFC(file)}
-        }, {})
+            return { ...accumulator, ...parsePropsFromSFC(file) };
+        }, {});
     }
 
 
-    const propsStartIndex = /props: {/.exec(content)
+    const propsStartIndex = /props: {/.exec(content);
 
-    if(!propsStartIndex || propsStartIndex.index === -1) {
-        return mixinProps
+    if (!propsStartIndex || propsStartIndex.index === -1) {
+        return mixinProps;
     }
 
-    const toSearch = content.substring(propsStartIndex.index, content.length)
+    const toSearch = content.substring(propsStartIndex.index, content.length);
 
-    let hasNotFoundStart = true
-    let openingBrace = 0
-    let index = 0
+    let hasNotFoundStart = true;
+    let openingBrace = 0;
+    let index = 0;
 
     while (openingBrace !== 0 || hasNotFoundStart) {
         if (toSearch[index] === '{') {
-            hasNotFoundStart = false
-            ++openingBrace
+            hasNotFoundStart = false;
+            ++openingBrace;
         }
         if (toSearch[index] === '}') {
-            --openingBrace
+            --openingBrace;
         }
-        ++index
+        ++index;
     }
 
     // parseMixinsFromContent(content)
 
-    return {...eval(`({${toSearch.substring(0, index)}})`).props, ...mixinProps}
+    return { ...mixinProps,...eval(`({${toSearch.substring(0, index)}})`).props };
 }
 
 /**
@@ -182,15 +183,15 @@ function parsePropsFromSFC(file) {
  * @param {String} file
  */
 function parseRequiredPropsFromSfc(file) {
-    const props = parsePropsFromSFC(file)
+    const props = parsePropsFromSFC(file);
 
     if (!props) {
-        return
+        return;
     }
 
     return Object.keys(props).filter(prop => {
-        return props[prop].required
-    })
+        return props[prop].required;
+    });
 }
 
 /**
@@ -200,17 +201,17 @@ function parseRequiredPropsFromSfc(file) {
  * @param {String} fileName
  */
 function insertSippet(editor, file, fileName) {
-    const requiredProps = parseRequiredPropsFromSfc(file)
+    const requiredProps = parseRequiredPropsFromSfc(file);
 
     let tabStop = 1;
 
     let snippetString = requiredProps.reduce((accumulator, prop) => {
-        return accumulator += ` :$${tabStop++}${prop}="$${tabStop++}"`
-    }, '')
+        return accumulator += ` :$${tabStop++}${prop}="$${tabStop++}"`;
+    }, '');
 
-    snippetString = `<${fileName}${snippetString}>$0</${fileName}>`
+    snippetString = `<${fileName}${snippetString}>$0</${fileName}>`;
 
-    editor.insertSnippet(new vscode.SnippetString(snippetString))
+    editor.insertSnippet(new SnippetString(snippetString));
 }
 
 /**
@@ -220,38 +221,44 @@ function insertSippet(editor, file, fileName) {
  * @param {String} fileName
  */
 async function insertImport(editor, file, fileName) {
-    const document = editor.document
-    const text = document.getText()
+    const document = editor.document;
+    const text = document.getText();
 
-    const match = /<script/.exec(text)
+    const match = /<script/.exec(text);
 
-    const fileWithoutRootPath = file.replace(getRootPath() + '/', '')
+    const fileWithoutRootPath = file.replace(getRootPath() + '/', '');
 
-    const aliases = findAliases()
-    const aliasKey = Object.keys(aliases).find(alias => fileWithoutRootPath.startsWith(aliases[alias][0].replace('*', '')))
+    const aliases = findAliases();
+    const aliasKey = Object.keys(aliases).find(alias => fileWithoutRootPath.startsWith(aliases[alias][0].replace('*', '')));
 
-    let alias = null
+    let alias = null;
 
     if (aliasKey) {
-        alias = { value: aliasKey.replace('*', ''), path: aliases[aliasKey][0].replace('*', '') }
+        alias = { value: aliasKey.replace('*', ''), path: aliases[aliasKey][0].replace('*', '') };
     }
 
-    let importPath = null
+    let importPath = null;
+
+    const path = require('path');
+    const path2 = fileWithoutRootPath;
+    const path3 = vscode.window.activeTextEditor.document.uri.fsPath.replace(getRootPath() + '/', '');
+
+    const relativePath = path.relative(path.dirname(path3), path.dirname(path2));
 
     if (alias) {
-        importPath = fileWithoutRootPath.replace(`${alias.path}`, alias.value)
+        importPath = fileWithoutRootPath.replace(`${alias.path}`, alias.value);
     } else {
-        importPath = fileWithoutRootPath.replace('src/', '@/')
+        importPath = `${relativePath}/${fileName}.vue`;
     }
 
 
 
     if (text.indexOf(`import ${fileName} from '${importPath}`) === -1) {
-        const scriptTagPosition = document.positionAt(match.index)
-        const insertPosition = new vscode.Position(scriptTagPosition.line + 1, 0)
+        const scriptTagPosition = document.positionAt(match.index);
+        const insertPosition = new vscode.Position(scriptTagPosition.line + 1, 0);
         await editor.edit(edit => {
-            edit.insert(insertPosition, `import ${fileName} from '${importPath}'\n`)
-        })
+            edit.insert(insertPosition, `import ${fileName} from '${importPath}'\n`);
+        });
     }
 }
 
@@ -262,26 +269,26 @@ async function insertImport(editor, file, fileName) {
  * @param {String} componentName
  */
 async function insertComponents(editor, text, componentName) {
-    const document = editor.document
+    const document = editor.document;
     const indentBase = editor.options.insertSpaces
         ? ' '.repeat(editor.options.tabSize)
-        : '\t'
-    const indent = indentBase.repeat(2)
-    const match = /export[\s]*default[\s]*\{/.exec(text)
+        : '\t';
+    const indent = indentBase.repeat(2);
+    const match = /export[\s]*default[\s]*\{/.exec(text);
 
     if (match && match.index > -1) {
-        let insertIndex = match.index + match[0].length
+        const insertIndex = match.index + match[0].length;
 
-        const propIndent = indentBase.repeat(1)
-        let componentString = ''
+        const propIndent = indentBase.repeat(1);
+        let componentString = '';
 
-        componentString = `\n${propIndent}components: {\n${indent}${componentName},\n${propIndent}},`
+        componentString = `\n${propIndent}components: {\n${indent}${componentName},\n${propIndent}},`;
 
-        const position = document.positionAt(insertIndex)
+        const position = document.positionAt(insertIndex);
 
         await editor.edit(edit => {
-            edit.insert(position, componentString)
-        })
+            edit.insert(position, componentString);
+        });
     }
 }
 
@@ -292,32 +299,32 @@ async function insertComponents(editor, text, componentName) {
  * @param {String} componentName
  */
 async function insertInExistingComponents(editor, match, componentName) {
-    const document = editor.document
+    const document = editor.document;
     const indentBase = editor.options.insertSpaces
-    ? ' '.repeat(editor.options.tabSize)
-    : '\t'
-    const indent = indentBase.repeat(2)
+        ? ' '.repeat(editor.options.tabSize)
+        : '\t';
+    const indent = indentBase.repeat(2);
 
-    let matchInsertIndex = match[0].length
+    let matchInsertIndex = match[0].length;
 
-    let found = false
+    let found = false;
 
     while (!found) {
-        matchInsertIndex--
+        matchInsertIndex--;
 
         if (/[\S]/.test(match[0].charAt(matchInsertIndex))) {
-            found = true
+            found = true;
         }
     }
 
-    const insertIndex = match.index + matchInsertIndex + 1
-    const insertPosition = document.positionAt(insertIndex)
+    const insertIndex = match.index + matchInsertIndex + 1;
+    const insertPosition = document.positionAt(insertIndex);
 
-    const componentString = `\n${indent}${componentName},`
+    const componentString = `\n${indent}${componentName},`;
 
     await editor.edit(edit => {
-        edit.insert(insertPosition, componentString)
-    })
+        edit.insert(insertPosition, componentString);
+    });
 }
 
 /**
@@ -326,152 +333,155 @@ async function insertInExistingComponents(editor, match, componentName) {
  * @param {String} componentName
  */
 async function insertComponent(editor, componentName) {
-    const document = editor.document
-    const text = document.getText()
+    const document = editor.document;
+    const text = document.getText();
     const indentBase = editor.options.insertSpaces
-    ? ' '.repeat(editor.options.tabSize)
-    : '\t'
-    const indent = indentBase.repeat(2)
+        ? ' '.repeat(editor.options.tabSize)
+        : '\t';
+    const indent = indentBase.repeat(2);
 
     // Component already registered
-    if(text.indexOf(`\n${indent}${componentName}`) !== -1) {
-        return
+    if (text.indexOf(`\n${indent}${componentName}`) !== -1) {
+        return;
     }
 
-    const match = /components( )*:( )*{[\s\S]*?(?=})/.exec(text)
+    const match = /components( )*:( )*{[\s\S]*?(?=})/.exec(text);
 
     // Components not yet defined add section with component
     if (!match || match.index === -1) {
-        return insertComponents(editor, text, componentName)
+        return insertComponents(editor, text, componentName);
     }
 
     // Add the component to components
-    insertInExistingComponents(editor, match, componentName)
+    insertInExistingComponents(editor, match, componentName);
 }
 function getLine(line) {
     const editor = vscode.window.activeTextEditor;
-    const document = editor.document
-    const text = document.getText()
+    const document = editor.document;
+    const text = document.getText();
 
 
-    return text.split('\n')[line]
+    return text.split('\n')[line];
+}
+function isPositionInBetweenTag(selector, position) {
+    const editor = vscode.window.activeTextEditor;
+    const document = editor.document;
+    const text = document.getText();
+
+    const start = text.indexOf(`<${selector}>`);
+    const end = text.indexOf(`</${selector}>`);
+
+    if (start === -1 || end === -1) {
+        return false;
+    }
+
+    const startLine = document.positionAt(start).line;
+    const endLine = document.positionAt(end).line;
+
+    return position.line > startLine && position.line < endLine;
 }
 function isCursorInBetweenTag(selector) {
     const editor = vscode.window.activeTextEditor;
-    const document = editor.document
-    const text = document.getText()
-
-    const start = text.indexOf(`<${selector}>`)
-    const end = text.indexOf(`</${selector}>`)
-
-    if (start === -1 || end === -1) {
-        return false
-    }
-
-    const startLine = document.positionAt(start).line
-    const endLine = document.positionAt(end).line
-
-    const position = editor.selection.active;
-
-    return position.line > startLine && position.line < endLine
+    return isPositionInBetweenTag(selector, editor.selection.active);
 }
+
 function getActiveEditorPosition() {
     const editor = vscode.window.activeTextEditor;
 
     return editor.selection.active;
 }
 
-function isInTemplateSection () {
-    return isCursorInBetweenTag('template')
+function isCursorInTemplateSection() {
+    return isCursorInBetweenTag('template');
 }
-function findAliases () {
+function findAliases() {
     try {
-        const { compilerOptions } = require(getRootPath() + '/jsconfig.json')
+        const { compilerOptions } = require(getRootPath() + '/jsconfig.json');
 
-        return compilerOptions.paths
+        return compilerOptions.paths;
     } catch (e) {
-        return []
+        return [];
     }
 }
 function getRootPath() {
     return config('rootDirectory')
         ? config('rootDirectory')
-        : vscode.workspace.rootPath
+        : vscode.workspace.rootPath;
 }
 function getComponentNameForLine(line, character = null) {
-    let matchTagName = (markup) => {
-        const pattern = /<([^\s></]+)/
+    const matchTagName = (markup) => {
+        const pattern = /<([^\s></]+)/;
 
-        const match = markup.match(pattern)
+        const match = markup.match(pattern);
 
         if (match) {
-            return match[1]
+            return match[1];
         }
 
-        return false
-    }
+        return false;
+    };
 
-    let component = false
-    let lineToCheck = line
+    let component = false;
+    let lineToCheck = line;
 
     do {
-        let lineContent = getLine(lineToCheck)
+        let lineContent = getLine(lineToCheck);
 
         if (lineToCheck === line && character) {
-            lineContent = lineContent.substring(0, character)
+            lineContent = lineContent.substring(0, character);
         }
 
-        component = matchTagName(lineContent)
+        component = matchTagName(lineContent);
 
-        if (lineContent.includes('>') && lineContent.includes('<')) {
-            return false
+        if (lineContent.includes('>') && lineContent.includes('<') && component === false) {
+            return false;
         }
 
         if ((lineContent.includes('>') || lineContent.includes('</')) && component === false) {
-            return false
+            return false;
         }
 
-        lineToCheck--
+        lineToCheck--;
     } while (component === false);
 
-    return component
+    return component;
 }
-async function getPropsForLine(line, character) {
-    const component = getComponentNameForLine(line, character)
+async function getPropsForLine(line, character = null) {
+    const component = getComponentNameForLine(line, character);
 
     if (!component) {
-        return
+        return;
     }
 
-    const files = await getVueFiles()
+    const files = await getVueFiles();
 
-    const file = files.find(file => file.includes(component))
+    const file = files.find(file => file.includes(component));
 
     if (!file) {
-        return
+        return;
     }
-    console.log(parsePropsFromSFC(file))
-    return parsePropsFromSFC(file)
+
+    return parsePropsFromSFC(file);
 }
 
 function isCursorInsideComponent() {
-    const position = getActiveEditorPosition()
+    const position = getActiveEditorPosition();
 
     if (!position) {
-        return false
+        return false;
     }
 
-    return getComponentNameForLine(position.line, position.character) !== false
+    return getComponentNameForLine(position.line, position.character) !== false;
 }
 function activate(context) {
-    vscode.languages.registerHoverProvider('vue', {
+    vscode.languages.registerHoverProvider({ pattern: '**/*.vue' }, {
         async provideHover(document, position) {
-            if (!isInTemplateSection()) {
-                return
+            if (!isPositionInBetweenTag('template', position)) {
+                return;
             }
 
-            jsFiles = await getJsFiles()
-            const props = await getPropsForLine(position.line, position.character)
+            jsFiles = await getJsFiles();
+            const props = await getPropsForLine(position.line);
 
             if (!props) {
                 return;
@@ -480,68 +490,70 @@ function activate(context) {
 
             return {
                 contents: Object.keys(props).map(propName => {
-                    const { required, type } = props[propName]
-                    let hoverContent = ''
+                    const { required, type } = props[propName];
+                    let hoverContent = '';
 
                     if (required) {
-                        hoverContent += '(required) '
+                        hoverContent += '(required) ';
                     }
 
-                    hoverContent += propName
+                    hoverContent += propName;
 
                     if (type) {
-                        hoverContent += `: ${type.name}`
+                        hoverContent += `: ${type.name}`;
                     }
 
-                    return hoverContent
-                })
+                    return hoverContent;
+                }),
             };
-        }
+        },
     });
 
-	let componentsCompletionItemProvider = vscode.languages.registerCompletionItemProvider({ language: 'vue', scheme: 'file' }, {
-		async provideCompletionItems() {
-            if (!isInTemplateSection() || isCursorInsideComponent()) {
-                return
+    const componentsCompletionItemProvider = vscode.languages.registerCompletionItemProvider({ pattern: '**/*.vue' }, {
+        async provideCompletionItems() {
+            if (!isCursorInTemplateSection() || isCursorInsideComponent()) {
+                return;
             }
+            jsFiles = await getJsFiles();
+            const files = await getVueFiles();
 
-            const files = await getVueFiles()
-
-            return files.map(createComponentCompletionItem)
-		}
+            return files.map(createComponentCompletionItem);
+        },
     });
 
-    let propsCompletionItemProvider = vscode.languages.registerCompletionItemProvider({ language: 'vue', scheme: 'file' }, {
-		async provideCompletionItems(document, position) {
+    const propsCompletionItemProvider = vscode.languages.registerCompletionItemProvider({ pattern: '**/*.vue' }, {
+        async provideCompletionItems(document, position) {
             if (!isCursorInsideComponent()) {
-                return
+                return;
             }
 
-            const props = await getPropsForLine(position.line, position.character)
+            jsFiles = await getJsFiles();
+            const props = await getPropsForLine(position.line, position.character);
 
             if (!props) {
-                return
+                return;
             }
 
-            return Object.keys(props).map(createPropCompletionItem)
-		}
+            return Object.keys(props).map(createPropCompletionItem);
+        },
     }, ':');
 
-	let importFile = vscode.commands.registerCommand('vueDiscovery.importFile', async (file, fileName) => {
-        if(!hasScriptTagInactiveTextEditor()) {
+    const importFile = vscode.commands.registerCommand('vueDiscovery.importFile', async (file, fileName) => {
+        if (!hasScriptTagInactiveTextEditor()) {
             return vscode.window.showWarningMessage('Looks like there is no script tag in this file!');
         }
+        jsFiles = await getJsFiles();
 
         const editor = vscode.window.activeTextEditor;
 
-        await insertImport(editor, file, fileName)
-        await insertComponent(editor, fileName)
-        await insertSippet(editor, file, fileName)
+        await insertImport(editor, file, fileName);
+        await insertComponent(editor, fileName);
+        await insertSippet(editor, file, fileName);
     });
 
-	context.subscriptions.push(componentsCompletionItemProvider, propsCompletionItemProvider, importFile);
+    context.subscriptions.push(componentsCompletionItemProvider, propsCompletionItemProvider, importFile);
 }
 
 module.exports = {
-    activate
-}
+    activate,
+};

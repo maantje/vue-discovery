@@ -5,7 +5,11 @@
 		"checkJs": true,
 		"lib": [
 			"es6"
-		]
+        ],
+        "baseUrl": "./",
+        "paths": {
+            "@/*": ["src/*"]
+        }
 	},
 	"includes": [
 		"src/**/*"

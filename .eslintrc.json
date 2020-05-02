@@ -12,7 +12,8 @@
 			"jsx": true
 		},
 		"sourceType": "module"
-	},
+    },
+    "extends": "spatie",
 	"rules": {
 		"no-const-assign": "warn",
 		"no-this-before-super": "warn",

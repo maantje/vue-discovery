@@ -160,6 +160,7 @@ function parsePropsFromSFC(file) {
     }
 
     const toSearch = content.substring(propsStartIndex.index, content.length);
+    console.log('toSearch', toSearch);
 
     let hasNotFoundStart = true;
     let openingBrace = 0;
@@ -176,8 +177,9 @@ function parsePropsFromSFC(file) {
         ++index;
     }
 
+    console.log('props', { ...mixinProps,...eval(`({${toSearch.substring(0, index)}})`).props });
+
     // parseMixinsFromContent(content)
-    console.log({ ...mixinProps,...eval(`({${toSearch.substring(0, index)}})`).props });
     return { ...mixinProps,...eval(`({${toSearch.substring(0, index)}})`).props };
 }
 

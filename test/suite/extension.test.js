@@ -34,7 +34,7 @@ describe('Interactions', function () {
 
         await vscode.commands.executeCommand('vueDiscovery.importFile', getDocPath('components/ComponentWithProps.vue'), 'ComponentWithProps');
 
-        await sleep(20);
+        await sleep(1000);
 
         testLineEquals(3, '\t\t<ComponentWithProps :name="" :names=""></ComponentWithProps>');
     });
@@ -78,7 +78,7 @@ describe('Interactions', function () {
 
         await vscode.commands.executeCommand('vueDiscovery.importFile', getDocPath('components/ComponentWithProps.vue'), 'ComponentWithProps');
 
-        await sleep(40);
+        await sleep(1000);
 
         testLineEquals(3, '\t\t<ComponentWithProps :name="" :names=""></ComponentWithProps><ComponentWithProps :name="" :names=""></ComponentWithProps>');
     });
@@ -102,7 +102,7 @@ describe('Interactions', function () {
 
         await vscode.commands.executeCommand('vueDiscovery.importFile', getDocPath('components/AnotherComponent.vue'), 'AnotherComponent');
 
-        await sleep(40);
+        await sleep(1000);
 
         testLineEquals(3, '\t\t<ComponentWithProps :name="" :names=""></ComponentWithProps><ComponentWithProps :name="" :names=""></ComponentWithProps><AnotherComponent :name="" :names=""></AnotherComponent>');
     });

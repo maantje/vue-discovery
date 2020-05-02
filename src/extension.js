@@ -132,7 +132,9 @@ function parseMixinsFromContent(content) {
  * @param {String} file
  */
 function parsePropsFromSFC(file) {
+    console.log(file);
     const content = fs.readFileSync(file,'utf8');
+    console.log(content);
 
     const mixins = parseMixinsFromContent(content);
     let mixinProps = {};

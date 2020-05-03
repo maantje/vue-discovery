@@ -22,6 +22,14 @@ describe('Interactions', function () {
         await showFile(docUri);
     });
 
+    // this.beforeEach(async () => {
+    //     await sleep(500);
+    // });
+
+    it('shows available components', async () => {
+        await testCompletion(docUri, position(3, 8), components);
+    });
+
     it('adds a component to the template section', async () => {
         const pos = position(3, 8);
         const editor = vscode.window.activeTextEditor;
@@ -34,7 +42,7 @@ describe('Interactions', function () {
 
         await vscode.commands.executeCommand('vueDiscovery.importFile', getDocPath('components/ComponentWithProps.vue'), 'ComponentWithProps');
 
-        await sleep(1000);
+        await sleep(50);
 
         testLineEquals(3, '\t\t<ComponentWithProps :name="" :names=""></ComponentWithProps>');
     });
@@ -58,10 +66,6 @@ describe('Interactions', function () {
         });
     });
 
-    it('shows available components', async () => {
-        await testCompletion(docUri, position(4, 9), components);
-    });
-
     it('does not show available components when inside attributes', async () => {
         await testCompletionDoesNotContainItems(docUri, position(3, 40), components);
     });
@@ -78,7 +82,7 @@ describe('Interactions', function () {
 
         await vscode.commands.executeCommand('vueDiscovery.importFile', getDocPath('components/ComponentWithProps.vue'), 'ComponentWithProps');
 
-        await sleep(1000);
+        await sleep(50);
 
         testLineEquals(3, '\t\t<ComponentWithProps :name="" :names=""></ComponentWithProps><ComponentWithProps :name="" :names=""></ComponentWithProps>');
     });
@@ -102,7 +106,7 @@ describe('Interactions', function () {
 
         await vscode.commands.executeCommand('vueDiscovery.importFile', getDocPath('components/AnotherComponent.vue'), 'AnotherComponent');
 
-        await sleep(1000);
+        await sleep(50);
 
         testLineEquals(3, '\t\t<ComponentWithProps :name="" :names=""></ComponentWithProps><ComponentWithProps :name="" :names=""></ComponentWithProps><AnotherComponent :name="" :names=""></AnotherComponent>');
     });

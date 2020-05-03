@@ -45,6 +45,7 @@
   "vscode-test": "^1.3.0"
  },
  "dependencies": {
-  "glob": "^7.1.6"
+  "glob": "^7.1.6",
+  "vue-parser": "^1.1.6"
  }
 }

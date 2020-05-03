@@ -12,7 +12,7 @@
 			"runtimeExecutable": "${execPath}",
 			"args": [
                 "${workspaceFolder}/test/fixture",
-                // "--disable-extensions",
+                "--disable-extensions",
 				"--extensionDevelopmentPath=${workspaceFolder}"
 			]
 		},

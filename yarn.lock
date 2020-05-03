@@ -1229,6 +1229,13 @@ parent-module@^1.0.0:
   dependencies:
     callsites "^3.0.0"
 
+parse5@^3.0.3:
+  version "3.0.3"
+  resolved "https://registry.yarnpkg.com/parse5/-/parse5-3.0.3.tgz#042f792ffdd36851551cf4e9e066b3874ab45b5c"
+  integrity sha512-rgO9Zg5LLLkfJF9E6CCmXlSE4UVceloys8JrFqCcHloC3usd/kJCyPDwH2SOlzix2j3xaP9sUX3e8+kvkuleAA==
+  dependencies:
+    "@types/node" "*"
+
 path-exists@^3.0.0:
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/path-exists/-/path-exists-3.0.0.tgz#ce0ebeaa5f78cb18925ea7d810d7b59b010fd515"
@@ -1610,6 +1617,13 @@ vue-eslint-parser@^2.0.1-beta.1:
     espree "^3.5.2"
     esquery "^1.0.0"
     lodash "^4.17.4"
+
+vue-parser@^1.1.6:
+  version "1.1.6"
+  resolved "https://registry.yarnpkg.com/vue-parser/-/vue-parser-1.1.6.tgz#3063c8431795664ebe429c23b5506899706e6355"
+  integrity sha512-v3/R7PLbaFVF/c8IIzWs1HgRpT2gN0dLRkaLIT5q+zJGVgmhN4VuZJF4Y9N4hFtFjS4B1EHxAOP6/tzqM4Ug2g==
+  dependencies:
+    parse5 "^3.0.3"
 
 which-module@^2.0.0:
   version "2.0.0"

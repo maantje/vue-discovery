@@ -18,12 +18,14 @@ const props = [
 
 describe('Interactions', function () {
     const docUri = getDocUri('App.vue');
-    const componentWithoutPropsSnippet = '<ComponentWithProps :name="" :names="" :default-value=""></ComponentWithProps>';
+    const componentWithoutPropsSnippet = '<component-with-props :name="" :names="" :defaultValue=""></component-with-props>';
 
     before('activate', async () => {
-        await vscode.commands.executeCommand('vueDiscovery.tests.setConfigOption', 'componentCase', 'pascal');
-        await vscode.commands.executeCommand('vueDiscovery.tests.setConfigOption', 'propCase', 'kebab');
-        await vscode.commands.executeCommand('vueDiscovery.tests.setConfigOption', 'addTrailingComma', true);
+        await vscode.commands.executeCommand('vueDiscovery.tests.setConfigOption', 'componentCase', 'kebab');
+        await vscode.commands.executeCommand('vueDiscovery.tests.setConfigOption', 'propCase', 'camel');
+        await vscode.commands.executeCommand('vueDiscovery.tests.setConfigOption', 'addTrailingComma', false);
+        await sleep(50);
+
         await showFile(docUri);
     });
 
@@ -53,7 +55,7 @@ describe('Interactions', function () {
     });
 
     it('registers the component', async () => {
-        const expected = '    components: {\n        ComponentWithProps,\n    },\n';
+        const expected = '    components: {\n        \'component-with-props\': ComponentWithProps\n    },\n';
         rangeEquals(range(10, 0, 13, 0), expected);
     });
 
@@ -96,7 +98,7 @@ describe('Interactions', function () {
     });
 
     it('does not register the component twice', async () => {
-        const expected = '    components: {\n        ComponentWithProps,\n    },\n';
+        const expected = '    components: {\n        \'component-with-props\': ComponentWithProps\n    },\n';
         rangeEquals(range(10, 0, 13, 0), expected);
     });
 
@@ -110,7 +112,7 @@ describe('Interactions', function () {
 
         await sleep(50);
 
-        testLineEquals(3, `\t\t${componentWithoutPropsSnippet}${componentWithoutPropsSnippet}<AnotherComponent :name="" :names=""></AnotherComponent>`);
+        testLineEquals(3, `\t\t${componentWithoutPropsSnippet}${componentWithoutPropsSnippet}<another-component :name="" :names=""></another-component>`);
     });
 
     it('imports another component and respects alias', async () => {
@@ -118,7 +120,7 @@ describe('Interactions', function () {
     });
 
     it('registers another component', async () => {
-        const expected = '    components: {\n        ComponentWithProps,\n        AnotherComponent,\n    },\n';
+        const expected = '    components: {\n        \'component-with-props\': ComponentWithProps,\n        \'another-component\': AnotherComponent\n    },\n';
         rangeEquals(range(11, 0, 15, 0), expected);
     });
 });

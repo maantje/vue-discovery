@@ -1,5 +1,5 @@
 const vscode = require('vscode');
-
+const _ = require('lodash');
 const {
     CompletionItemKind,
     CompletionItem,
@@ -15,7 +15,7 @@ const glob = require('glob');
 const fs = require('fs');
 const path = require('path');
 const Parser  = require('./parser');
-
+const configOverride = {};
 let jsFiles = [];
 
 function getFilesByExtension(extension) {
@@ -94,6 +94,10 @@ function hasScriptTagInactiveTextEditor() {
 }
 
 function config(key) {
+    if (key in configOverride) {
+        return configOverride[key];
+    }
+
     return workspace
         .getConfiguration()
         .get(`vueDiscovery.${key}`);
@@ -151,12 +155,34 @@ function insertSnippet(file, fileName) {
     let tabStop = 1;
 
     const requiredPropsSnippetString = requiredProps.reduce((accumulator, prop) => {
-        return accumulator += ` :$${tabStop++}${prop}="$${tabStop++}"`;
+        return accumulator += ` :$${tabStop++}${propCase(prop)}="$${tabStop++}"`;
     }, '');
+
+    fileName = caseFileName(fileName);
 
     const snippetString = `<${fileName}${requiredPropsSnippetString}>$0</${fileName}>`;
 
     getEditor().insertSnippet(new SnippetString(snippetString));
+}
+
+function propCase(prop) {
+    const casing = config('propCase');
+
+    if (casing === 'kebab') {
+        return _.kebabCase(prop);
+    }
+
+    return _.camelCase(prop);
+}
+
+function caseFileName(fileName) {
+    const casing = config('componentCase');
+
+    if (casing === 'kebab') {
+        return _.kebabCase(fileName);
+    }
+
+    return _.upperFirst(_.camelCase(fileName));
 }
 
 function getEditor() {
@@ -247,13 +273,20 @@ async function insertComponents(text, componentName) {
 
     const insertIndex = match.index + match[0].length;
     const propIndent = getIndentBase().repeat(1);
-    const componentString = `\n${propIndent}components: {\n${getIndent()}${componentName},\n${propIndent}},`;
+    const component = `\n${propIndent}components: {\n${getIndent()}${componentName}\n${propIndent}},`;
 
     await getEditor().edit(edit => {
-        edit.insert(getDocument().positionAt(insertIndex), componentString);
+        edit.insert(getDocument().positionAt(insertIndex), component);
     });
 }
 
+function componentCase(componentName) {
+    if (config('componentCase') === 'kebab') {
+        return `'${_.kebabCase(componentName)}': ${componentName}`;
+    }
+
+    return componentName;
+}
 /**
  * Inserts the component in an existing components section
  * @param {Object} match
@@ -276,20 +309,29 @@ async function insertInExistingComponents(match, componentName) {
 
     if (lastCharacter === ',') {
         lastCharacter = '';
+    } else {
+        lastCharacter = ',';
     }
 
-    const componentString = `${lastCharacter}\n${getIndent()}${componentName},`;
+    const component = `${lastCharacter}\n${getIndent()}${componentName}`;
 
     await getEditor().edit(edit => {
-        edit.insert(getDocument().positionAt(insertIndex), componentString);
+        edit.insert(getDocument().positionAt(insertIndex), component);
     });
 }
+function addTrailingComma(component) {
+    if (!config('addTrailingComma')) {
+        return component;
+    }
 
+    return component + ',';
+}
 /**
  * Checks whether to create a new components section or append to an existing one and appends it
  * @param {String} componentName
  */
 async function insertComponent(componentName) {
+    componentName = addTrailingComma(componentCase(componentName));
     const text = getDocumentText();
 
     // Component already registered
@@ -394,7 +436,7 @@ function getComponentNameForLine(line, character = null) {
         lineToCheck--;
     } while (component === false);
 
-    return component;
+    return _.upperFirst(_.camelCase(component.toString()));
 }
 
 async function getPropsForLine(line, character = null) {
@@ -528,7 +570,10 @@ function activate(context) {
         await insertSnippet(file, fileName);
     });
 
-    context.subscriptions.push(componentsCompletionItemProvider, propsCompletionItemProvider, importExisting, importFile);
+    const setConfigOption = commands.registerCommand('vueDiscovery.tests.setConfigOption', (key, value) => {
+        configOverride[key] = value;
+    });
+    context.subscriptions.push(componentsCompletionItemProvider, propsCompletionItemProvider, importExisting, importFile, setConfigOption);
 }
 
 module.exports = {

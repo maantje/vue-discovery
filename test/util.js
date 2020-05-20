@@ -35,6 +35,8 @@ function sleep(ms) {
 }
 
 async function showFile(docUri) {
+    vscode.commands.executeCommand('workbench.action.closeActiveEditor');
+    await sleep(50);
     const doc = await vscode.workspace.openTextDocument(docUri);
     return await vscode.window.showTextDocument(doc);
 }

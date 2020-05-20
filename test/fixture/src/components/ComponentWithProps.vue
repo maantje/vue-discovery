@@ -14,6 +14,11 @@ export default {
             required: false,
             value: '',
         },
+        defaultValue: {
+            type: String,
+            required: true,
+            value: '',
+        },
     },
 };
 </script>

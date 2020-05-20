@@ -145,7 +145,7 @@ function retrieveRequirePropsFromFile(file) {
  * @param {String} file
  * @param {String} fileName
  */
-function insertSippet(file, fileName) {
+function insertSnippet(file, fileName) {
     const requiredProps = retrieveRequirePropsFromFile(file);
 
     let tabStop = 1;
@@ -415,14 +415,18 @@ async function getPropsForLine(line, character = null) {
     return retrievePropsFrom(file);
 }
 
-function isCursorInsideComponent() {
+
+function getComponentAtCursor() {
     const position = getActiveEditorPosition();
 
     if (!position) {
         return false;
     }
 
-    return getComponentNameForLine(position.line, position.character) !== false;
+    return getComponentNameForLine(position.line);
+}
+function isCursorInsideComponent() {
+    return getComponentAtCursor() !== false;
 }
 
 function hoverContentFromProps(props) {
@@ -494,18 +498,37 @@ function activate(context) {
         },
     }, ':');
 
+    const importExisting = commands.registerCommand('vueDiscovery.importExisting', async () => {
+        if (!hasScriptTagInactiveTextEditor()) {
+            return window.showWarningMessage('Looks like there is no script tag in this file!');
+        }
+
+        const fileName = getComponentAtCursor();
+        const file = (await getVueFiles()).find(file => file.includes(`${fileName}.vue`));
+
+        if (!fileName || !file) {
+            return;
+        }
+
+        jsFiles = await getJsFiles();
+
+        await insertImport(file, fileName.toString());
+        await insertComponent(fileName.toString());
+    });
+
     const importFile = commands.registerCommand('vueDiscovery.importFile', async (file, fileName) => {
         if (!hasScriptTagInactiveTextEditor()) {
             return window.showWarningMessage('Looks like there is no script tag in this file!');
         }
+
         jsFiles = await getJsFiles();
 
         await insertImport(file, fileName);
         await insertComponent(fileName);
-        await insertSippet(file, fileName);
+        await insertSnippet(file, fileName);
     });
 
-    context.subscriptions.push(componentsCompletionItemProvider, propsCompletionItemProvider, importFile);
+    context.subscriptions.push(componentsCompletionItemProvider, propsCompletionItemProvider, importExisting, importFile);
 }
 
 module.exports = {

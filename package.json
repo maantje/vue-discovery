@@ -26,7 +26,20 @@
     }
    }
   },
-  "commands": []
+  "keybindings": [
+    {
+      "command": "vueDiscovery.importExisting",
+      "key": "ctrl+i",
+      "mac": "cmd+i",
+      "when": "editorTextFocus"
+    }
+  ],
+  "commands": [
+    {
+      "command": "vueDiscovery.importExisting",
+      "title": "Vue Discovery: Import a vue component"
+    }
+  ]
  },
  "scripts": {
   "lint": "eslint .",

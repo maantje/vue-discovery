@@ -7,7 +7,7 @@
     <img src="https://vsmarketplacebadge.apphb.com/version-short/Maantje.vue-discovery.svg?style=flat-square">
   </a>
   <a href="https://marketplace.visualstudio.com/items?itemName=Maantje.vue-discovery">
-    <img src="http://vsmarketplacebadge.apphb.com/downloads/Maantje.vue-discovery.svg?style=flat-square">
+    <img src="https://vsmarketplacebadge.apphb.com/downloads/Maantje.vue-discovery.svg?style=flat-square">
   </a>
   <a href="https://marketplace.visualstudio.com/items?itemName=Maantje.vue-discovery">
     <img src="https://vsmarketplacebadge.apphb.com/rating-star/Maantje.vue-discovery.svg?style=flat-square">

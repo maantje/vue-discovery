@@ -39,4 +39,4 @@ This extension can be customized with the following settings:
 
 ### 1.0.0
 
-Initial release of Vue discovery
+Initial release of Vue discovery.

@@ -1,28 +1,41 @@
-# Vue discovery 🔭
+<p>
+  <h1 align="center">Vue discovery 🔭</h1>
+</p>
 
-This extension discovers Vue components in your workspace and provides intellisens for them. Just starting typing your
-component name and press enter to automatically import, register and expand any required props.
+<p align="center">
+  <a href="https://marketplace.visualstudio.com/items?itemName=Maantje.vue-discovery">
+    <img src="https://vsmarketplacebadge.apphb.com/version-short/Maantje.vue-discovery.svg?style=flat-square">
+  </a>
+  <a href="https://marketplace.visualstudio.com/items?itemName=Maantje.vue-discovery">
+    <img src="http://vsmarketplacebadge.apphb.com/downloads/Maantje.vue-discovery.svg?style=flat-square">
+  </a>
+  <a href="https://marketplace.visualstudio.com/items?itemName=Maantje.vue-discovery">
+    <img src="https://vsmarketplacebadge.apphb.com/rating-star/Maantje.vue-discovery.svg?style=flat-square">
+  </a>
+</p>
+
+This extension discovers Vue components in your workspace and provides IntelliSense for them. Just starting typing your component name and press enter to automatically import, register and expand any required props.
 
 <img src="images/overview_o.gif" width="680">
 
 ## ✨ Features
 
-* Provide intellisens for components in template section
+##### Provide IntelliSense for components in template section
 <img src="images/show-components.gif" width="680">
 
-* Automatically import, register and expand required props
+##### Automatically import, register and expand required props
 <img src="images/auto-import.gif" width="680">
 
-* Provide intellisens for props on components
+##### Provide IntelliSense for props on components
 <img src="images/show-available-props.gif" width="680">
 
-* Show available props on hover
+##### Show available props on hover
 <img src="images/show-props-on-hover.gif" width="680">
 
-* Uses your defined paths in `jsconfig.json`
+##### Uses your defined paths in `jsconfig.json`
 <img src="images/uses-paths.gif" width="680">
 
-* Import with `cmd + i`, this is useful for importing pasted components
+##### Import with `cmd + i`, this is useful for importing pasted components
 <img src="images/import-keybind.gif" width="680">
 
 
@@ -36,6 +49,14 @@ This extension can be customized with the following settings:
 * `vueDiscovery.propCase`: The casing for the props, available options are `kebab` for kebab-case and `camel` for camelCase (default: `kebab`)
 
 ## 🔖 Release Notes
+
+### 1.2.0
+
+Add badges to readme and update description.
+
+### 1.1.0
+
+Add icon.
 
 ### 1.0.0
 

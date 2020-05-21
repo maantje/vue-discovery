@@ -213,7 +213,17 @@ function getAlias(fileWithoutRootPath) {
 function getRelativePath(fileWithoutRootPath) {
     const openFileWithoutRootPath = getDocument().uri.fsPath.replace(getRootPath() + '/', '');
 
-    return path.relative(path.dirname(openFileWithoutRootPath), path.dirname(fileWithoutRootPath));
+    const importPath = path.relative(path.dirname(openFileWithoutRootPath), path.dirname(fileWithoutRootPath));
+
+    if (importPath === '') {
+        return '.';
+    }
+
+    if (importPath.startsWith('..')) {
+        return importPath;
+    }
+
+    return `./${importPath}`;
 }
 
 function getImportPath(file, fileName) {

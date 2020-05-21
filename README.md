@@ -4,19 +4,24 @@ This extension discovers Vue components in your workspace and provides intellise
 component name and press enter to automatically import, register and expand any required props.
 
 <img src="images/overview_o.gif" width="680">
-## ✨ Features
 
+## ✨ Features
 
 * Provide intellisens for components in template section
 <img src="images/show-components.gif" width="680">
+
 * Automatically import, register and expand required props
 <img src="images/auto-import.gif" width="680">
+
 * Provide intellisens for props on components
 <img src="images/show-available-props.gif" width="680">
+
 * Show available props on hover
 <img src="images/show-props-on-hover.gif" width="680">
+
 * Uses your defined paths in `jsconfig.json`
 <img src="images/uses-paths.gif" width="680">
+
 * Import with `cmd + i`, this is useful for importing pasted components
 <img src="images/import-keybind.gif" width="680">
 

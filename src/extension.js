@@ -20,7 +20,7 @@ let jsFiles = [];
 
 function getFilesByExtension(extension) {
     return new Promise((resolve, reject) => {
-        glob(`${getRootPath()}/src/**/*.${extension}`, (err, res) => {
+        glob(`${getRootPath()}${config('rootDirectory')}/**/*.${extension}`, (err, res) => {
             if (err) {
                 return reject(err);
             }
@@ -396,9 +396,7 @@ function findAliases() {
 }
 
 function getRootPath() {
-    return config('rootDirectory')
-        ? config('rootDirectory')
-        : workspace.rootPath;
+    return workspace.rootPath;
 }
 
 function matchTagName(markup) {

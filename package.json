@@ -3,7 +3,8 @@
   "displayName": "Vue discovery",
   "description": "Missing component discovery for Vue.",
   "publisher": "maantje",
-  "version": "0.1.0",
+  "repository": "https://github.com/maantje/vue-discovery",
+  "version": "1.0.0",
   "engines": {
     "vscode": "^1.44.0"
   },
@@ -21,8 +22,8 @@
       "properties": {
         "vueDiscovery.rootDirectory": {
           "type": "string",
-          "default": "",
-          "description": "root directory in workspace for file grep. ex) src"
+          "default": "/src",
+          "description": "root directory in your workspace"
         },
         "vueDiscovery.componentCase": {
           "type": "string",

@@ -50,6 +50,14 @@ This extension can be customized with the following settings:
 
 ## 🔖 Release Notes
 
+### 1.3.1
+
+Fix relative import for relative paths.
+
+### 1.3.0
+
+Add badges to readme and update description.
+
 ### 1.2.0
 
 Add badges to readme and update description.

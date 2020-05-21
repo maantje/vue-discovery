@@ -6,6 +6,7 @@ class Parser {
             script: null,
             props: null,
             mixins: null,
+            events: null,
         };
     }
     getContentBetweenTag(tag) {
@@ -108,6 +109,13 @@ class Parser {
 
         return this;
     }
+    events() {
+        const events = this.content.match(/\$emit\(['"][A-Za-z]+/g);
+
+        this.parsed.events = (events || []).map(event => event.slice(7, event.length));
+
+        return this;
+    }
     template() {
         this.parsed.template = this.getContentBetweenTag('template');
 
@@ -128,7 +136,8 @@ class Parser {
         this.template()
             .script()
             .mixins()
-            .props();
+            .props()
+            .events();
 
         return this.parsed;
     }

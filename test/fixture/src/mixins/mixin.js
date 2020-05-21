@@ -5,4 +5,7 @@ export default {
             required: true,
         },
     },
+    mounted() {
+        this.$emit('eventInMixin')
+    }
 };

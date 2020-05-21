@@ -85,6 +85,13 @@ function createPropCompletionItem(prop) {
     return snippetCompletion;
 }
 
+function createEventCompletionItem(event) {
+    const snippetCompletion = new CompletionItem(event, CompletionItemKind.Event);
+
+    snippetCompletion.insertText = new SnippetString(`${_.kebabCase(event)}="$0"`);
+
+    return snippetCompletion;
+}
 
 function hasScriptTagInactiveTextEditor() {
     const text = window.activeTextEditor.document.getText();
@@ -126,6 +133,31 @@ function retrievePropsFrom(file) {
     }
 
     return { ...mixinProps,...props };
+}
+
+/**
+ * Retrieves the events from a fire
+ * @param {String} file
+ */
+function retrieveEventsFrom(file) {
+    const content = fs.readFileSync(file,'utf8');
+    const { mixins, events } = new Parser(content).parse();
+
+    let mixinEvents = [];
+
+    if (mixins) {
+        mixinEvents = mixins.reduce((accumulator, mixin) => {
+            const file = jsFiles.find(file => file.includes(mixin));
+
+            if (!file) {
+                return accumulator;
+            }
+
+            return [...accumulator, ...retrieveEventsFrom(file)];
+        }, []);
+    }
+
+    return [...mixinEvents,...events];
 }
 
 /**
@@ -446,7 +478,23 @@ function getComponentNameForLine(line, character = null) {
 
     return _.upperFirst(_.camelCase(component.toString()));
 }
+async function getEventsForLine(line, character = null) {
+    const component = getComponentNameForLine(line, character);
 
+    if (!component) {
+        return;
+    }
+
+    const files = await getVueFiles();
+
+    const file = files.find(file => file.includes(component));
+
+    if (!file) {
+        return;
+    }
+
+    return retrieveEventsFrom(file);
+}
 async function getPropsForLine(line, character = null) {
     const component = getComponentNameForLine(line, character);
 
@@ -531,6 +579,23 @@ function activate(context) {
         },
     });
 
+    const eventsCompletionItemProvider = languages.registerCompletionItemProvider({ pattern: '**/*.vue' }, {
+        async provideCompletionItems(document, position) {
+            if (!isCursorInsideComponent()) {
+                return;
+            }
+
+            jsFiles = await getJsFiles();
+            const events = await getEventsForLine(position.line, position.character);
+
+            if (!events) {
+                return;
+            }
+
+            return events.map(createEventCompletionItem);
+        },
+    }, '@');
+
     const propsCompletionItemProvider = languages.registerCompletionItemProvider({ pattern: '**/*.vue' }, {
         async provideCompletionItems(document, position) {
             if (!isCursorInsideComponent()) {
@@ -581,7 +646,7 @@ function activate(context) {
     const setConfigOption = commands.registerCommand('vueDiscovery.tests.setConfigOption', (key, value) => {
         configOverride[key] = value;
     });
-    context.subscriptions.push(componentsCompletionItemProvider, propsCompletionItemProvider, importExisting, importFile, setConfigOption);
+    context.subscriptions.push(componentsCompletionItemProvider, propsCompletionItemProvider, eventsCompletionItemProvider, importExisting, importFile, setConfigOption);
 }
 
 module.exports = {

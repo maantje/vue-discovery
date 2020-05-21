@@ -16,6 +16,12 @@ const props = [
     new vscode.CompletionItem('names', vscode.CompletionItemKind.Variable),
 ];
 
+const events = [
+    new vscode.CompletionItem('eventInComponent', vscode.CompletionItemKind.Event),
+    new vscode.CompletionItem('eventInMixin', vscode.CompletionItemKind.Event),
+    new vscode.CompletionItem('eventInSubMixin', vscode.CompletionItemKind.Event),
+];
+
 describe('Interactions', function () {
     const docUri = getDocUri('App.vue');
     const componentWithoutPropsSnippet = '<component-with-props :name="" :names="" :defaultValue=""></component-with-props>';
@@ -74,8 +80,8 @@ describe('Interactions', function () {
         await testCompletionDoesNotContainItems(docUri, position(3, 40), components);
     });
 
-    it('completes props on a component', async () => {
-        await testCompletion(docUri, position(3, 40), props);
+    it('completes props and events on a component', async () => {
+        await testCompletion(docUri, position(3, 40), [...props, ...events]);
     });
 
     it('adds the same component to the template section', async () => {

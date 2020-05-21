@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div @click="$emit('eventInComponent')">
 
   </div>
 </template>
@@ -20,6 +20,9 @@ export default {
             value: '',
         },
     },
+    created() {
+
+    }
 };
 </script>
 

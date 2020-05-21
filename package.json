@@ -4,7 +4,7 @@
   "description": "Missing component discovery for Vue.",
   "publisher": "maantje",
   "repository": "https://github.com/maantje/vue-discovery",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "icon": "images/icon.png",
   "engines": {
     "vscode": "^1.44.0"
@@ -36,18 +36,18 @@
           "description": "The casing of the imported component"
         },
         "vueDiscovery.addTrailingComma": {
-            "type": "boolean",
-            "default": true,
-            "description": "Add a trailing comma"
+          "type": "boolean",
+          "default": true,
+          "description": "Add a trailing comma"
         },
         "vueDiscovery.propCase": {
-            "type": "string",
-            "enum": [
-                "camel",
-                "kebab"
-            ],
-            "default": "kebab",
-            "description": "The casing of the props"
+          "type": "string",
+          "enum": [
+            "camel",
+            "kebab"
+          ],
+          "default": "kebab",
+          "description": "The casing of the props"
         }
       }
     },

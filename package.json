@@ -5,6 +5,7 @@
   "publisher": "maantje",
   "repository": "https://github.com/maantje/vue-discovery",
   "version": "1.0.0",
+  "icon": "images/icon.png",
   "engines": {
     "vscode": "^1.44.0"
   },

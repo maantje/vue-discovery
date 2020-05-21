@@ -32,6 +32,9 @@ This extension discovers Vue components in your workspace and provides IntelliSe
 ##### Show available props on hover
 <img src="images/show-props-on-hover.gif" width="680">
 
+##### Provide IntelliSense for events
+<img src="images/event-intellisense.gif" width="680">
+
 ##### Uses your defined paths in `jsconfig.json`
 <img src="images/uses-paths.gif" width="680">
 
@@ -49,6 +52,10 @@ This extension can be customized with the following settings:
 * `vueDiscovery.propCase`: The casing for the props, available options are `kebab` for kebab-case and `camel` for camelCase (default: `kebab`)
 
 ## 🔖 Release Notes
+
+### 1.4.0
+
+Add IntelliSense for events
 
 ### 1.3.1
 

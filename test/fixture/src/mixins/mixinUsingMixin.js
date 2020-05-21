@@ -7,4 +7,7 @@ export default {
             required: true,
         },
     },
+    created() {
+        this.$emit('eventInSubMixin')
+    }
 };

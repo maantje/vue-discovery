@@ -24,7 +24,7 @@
         "vueDiscovery.rootDirectory": {
           "type": "string",
           "default": "/src",
-          "description": "root directory in your workspace"
+          "description": "Root directory in your workspace."
         },
         "vueDiscovery.componentCase": {
           "type": "string",
@@ -33,12 +33,20 @@
             "kebab"
           ],
           "default": "pascal",
-          "description": "The casing of the imported component"
+          "description": "The casing of the imported component."
         },
         "vueDiscovery.addTrailingComma": {
           "type": "boolean",
           "default": true,
           "description": "Add a trailing comma"
+        },
+        "vueDiscovery.extensions": {
+          "type": [
+            "array",
+            "null"
+          ],
+          "default": null,
+          "description": "File extensions Vue discovery will be active in."
         },
         "vueDiscovery.propCase": {
           "type": "string",
@@ -47,7 +55,7 @@
             "kebab"
           ],
           "default": "kebab",
-          "description": "The casing of the props"
+          "description": "The casing of the props."
         }
       }
     },

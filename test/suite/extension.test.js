@@ -2,25 +2,8 @@ const assert = require('assert');
 const vscode = require('vscode');
 const { showFile, getDocUri, position, getDocPath, sleep, range } = require('../util');
 const { testLineEquals, rangeEquals, testHover, testCompletion, testCompletionDoesNotContainItems } = require('../helpers');
+const { components, props, events, hover } = require('../fixtures');
 
-const components = [
-    Object.assign(new vscode.CompletionItem('ComponentWithProps', vscode.CompletionItemKind.Constructor), { detail: 'components/ComponentWithProps.vue' }),
-    Object.assign(new vscode.CompletionItem('AnotherComponent', vscode.CompletionItemKind.Constructor), { detail: 'components/AnotherComponent.vue' }),
-    Object.assign(new vscode.CompletionItem('App', vscode.CompletionItemKind.Constructor), { detail: 'src/App.vue' }),
-];
-
-const props = [
-    new vscode.CompletionItem('label', vscode.CompletionItemKind.Variable),
-    new vscode.CompletionItem('defaultValue', vscode.CompletionItemKind.Variable),
-    new vscode.CompletionItem('name', vscode.CompletionItemKind.Variable),
-    new vscode.CompletionItem('names', vscode.CompletionItemKind.Variable),
-];
-
-const events = [
-    new vscode.CompletionItem('eventInComponent', vscode.CompletionItemKind.Event),
-    new vscode.CompletionItem('eventInMixin', vscode.CompletionItemKind.Event),
-    new vscode.CompletionItem('eventInSubMixin', vscode.CompletionItemKind.Event),
-];
 
 describe('Interactions', function () {
     const docUri = getDocUri('App.vue');
@@ -65,12 +48,7 @@ describe('Interactions', function () {
 
     it('shows props when hovering a component', async () => {
         await testHover(docUri, position(3, 10), {
-            contents: [
-                '(required) name: String',
-                '(required) names: Array',
-                'label: String',
-                '(required) defaultValue: String',
-            ],
+            contents: hover,
         });
     });
 

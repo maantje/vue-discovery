@@ -417,6 +417,14 @@ function isCursorInBetweenTag(selector) {
     return isPositionInBetweenTag(selector, getEditor().selection.active);
 }
 
+function isActiveDocumentVueFile() {
+    return isDocumentVueFile(getDocument());
+}
+
+function isDocumentVueFile(document) {
+    return document.uri.fsPath.endsWith('.vue');
+
+}
 function getActiveEditorPosition() {
     const editor = window.activeTextEditor;
 
@@ -514,8 +522,8 @@ async function getPropsForLine(line, character = null) {
 }
 
 
-function getComponentAtCursor() {
-    const position = getActiveEditorPosition();
+function getComponentAtCursor(pos) {
+    const position = pos || getActiveEditorPosition();
 
     if (!position) {
         return false;
@@ -523,8 +531,8 @@ function getComponentAtCursor() {
 
     return getComponentNameForLine(position.line);
 }
-function isCursorInsideComponent() {
-    return getComponentAtCursor() !== false;
+function isCursorInsideComponent(position) {
+    return getComponentAtCursor(position) !== false;
 }
 
 function hoverContentFromProps(props) {
@@ -539,7 +547,7 @@ function hoverContentFromProps(props) {
         }
 
         if (type) {
-            typeText = `: ${type.name}`;
+            typeText = `: \`${type.name}\``;
         }
 
         return `${requiredText}${propName}${typeText}`;
@@ -547,11 +555,15 @@ function hoverContentFromProps(props) {
 }
 
 function activate(context) {
-    languages.registerHoverProvider({ pattern: '**/*.vue' }, {
+    const patterns = ['.vue', ...config('extensions').filter(v => v && v !== '.vue')]
+        .map(extension => ({ pattern: `**/*${extension}` }));
+
+    languages.registerHoverProvider(patterns, {
         async provideHover(document, position) {
-            if (!isPositionInBetweenTag('template', position)) {
+            if (!isCursorInsideComponent(position)) {
                 return;
             }
+            console.log('Jas');
 
             jsFiles = await getJsFiles();
             const props = await getPropsForLine(position.line);
@@ -567,11 +579,12 @@ function activate(context) {
         },
     });
 
-    const componentsCompletionItemProvider = languages.registerCompletionItemProvider({ pattern: '**/*.vue' }, {
-        async provideCompletionItems() {
-            if (!isCursorInTemplateSection() || isCursorInsideComponent()) {
+    const componentsCompletionItemProvider = languages.registerCompletionItemProvider(patterns, {
+        async provideCompletionItems(document) {
+            if ((isDocumentVueFile(document) && !isCursorInTemplateSection()) || isCursorInsideComponent()) {
                 return;
             }
+
             jsFiles = await getJsFiles();
             const files = await getVueFiles();
 
@@ -579,7 +592,7 @@ function activate(context) {
         },
     });
 
-    const eventsCompletionItemProvider = languages.registerCompletionItemProvider({ pattern: '**/*.vue' }, {
+    const eventsCompletionItemProvider = languages.registerCompletionItemProvider(patterns, {
         async provideCompletionItems(document, position) {
             if (!isCursorInsideComponent()) {
                 return;
@@ -596,7 +609,7 @@ function activate(context) {
         },
     }, '@');
 
-    const propsCompletionItemProvider = languages.registerCompletionItemProvider({ pattern: '**/*.vue' }, {
+    const propsCompletionItemProvider = languages.registerCompletionItemProvider(patterns, {
         async provideCompletionItems(document, position) {
             if (!isCursorInsideComponent()) {
                 return;
@@ -614,7 +627,7 @@ function activate(context) {
     }, ':');
 
     const importExisting = commands.registerCommand('vueDiscovery.importExisting', async () => {
-        if (!hasScriptTagInactiveTextEditor()) {
+        if (isActiveDocumentVueFile() && !hasScriptTagInactiveTextEditor()) {
             return window.showWarningMessage('Looks like there is no script tag in this file!');
         }
 
@@ -632,14 +645,13 @@ function activate(context) {
     });
 
     const importFile = commands.registerCommand('vueDiscovery.importFile', async (file, fileName) => {
-        if (!hasScriptTagInactiveTextEditor()) {
-            return window.showWarningMessage('Looks like there is no script tag in this file!');
-        }
-
         jsFiles = await getJsFiles();
 
-        await insertImport(file, fileName);
-        await insertComponent(fileName);
+        if (isActiveDocumentVueFile() && hasScriptTagInactiveTextEditor()) {
+            await insertImport(file, fileName);
+            await insertComponent(fileName);
+        }
+
         await insertSnippet(file, fileName);
     });
 

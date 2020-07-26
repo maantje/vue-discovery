@@ -46,10 +46,11 @@ This extension discovers Vue components in your workspace and provides IntelliSe
 
 This extension can be customized with the following settings:
 
-* `vueDiscovery.rootDirectory`: this tells where to look for vue components (default: `src`)
+* `vueDiscovery.rootDirectory`: This tells where to look for vue components (default: `src`)
 * `vueDiscovery.componentCase`: The casing for the component, available options are `kebab` for kebab-case and `pascal` for PascalCase (default: `pascal`)
 * `vueDiscovery.addTrailingComma`: Add a trailing comma to the registered component (default: `true`)
 * `vueDiscovery.propCase`: The casing for the props, available options are `kebab` for kebab-case and `camel` for camelCase (default: `kebab`)
+* `vueDiscovery.extensions`: An array of file extensions Vue discovery will be active in, .vue is always active. (default: `null`)
 
 ## 🔖 Release Notes
 

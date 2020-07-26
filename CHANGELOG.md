@@ -3,6 +3,10 @@
 All notable changes to the "vue-discovery" extension will be documented in this file.
 ## [Unreleased]
 
+## [1.5.0] 2020-07-06
+### Added
+- Add configuration option to make the extension work with different file extensions.
+
 ## [1.4.0] 2020-05-21
 ### Added
 - IntelliSense for events

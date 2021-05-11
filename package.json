@@ -84,7 +84,7 @@
   },
   "dependencies": {
     "glob": "^7.1.6",
-    "lodash": "^4.17.19",
+    "lodash": "^4.17.21",
     "vue-parser": "^1.1.6"
   }
 }
